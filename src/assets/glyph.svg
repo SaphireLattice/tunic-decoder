@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="32"
+   viewBox="0 0 16 32"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   sodipodi:docname="glyph.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <style
+     id="style840">
+.line {
+    fill:none;
+    stroke:#000000;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-width:1px;
+}
+</style>
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     height="32px"
+     inkscape:zoom="22.627417"
+     inkscape:cx="1.016466"
+     inkscape:cy="17.147339"
+     inkscape:window-width="1920"
+     inkscape:window-height="1021"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="high" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:1"
+       d="M 1.0,15.5 15.0,15.5"
+       id="baseline"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="high">
+      <path
+         d="M 8,3.5 1,8"
+         id="high_1"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="M 8,3.5 15,8"
+         id="high_2"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 1,8 7,4.5"
+         id="high_3"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="M 15,8 8,12.5"
+         id="high_4"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 1,8 v 7.5"
+         id="high_5"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 8,3.5 v 9"
+         id="high_6"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 15,8 v 7.5"
+         id="high_7"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 8,12.5 v 3"
+         id="high_8"
+         sodipodi:nodetypes="cc"
+         class="line" />
+    </g>
+    <g
+       id="low">
+      <path
+         d="m 8,17.5 -7,4.5"
+         id="low_1"
+         class="line" />
+      <path
+         d="m 8,17.5 7,4.5"
+         id="low_2"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 1,22 7,4.5"
+         id="low_3"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 15,22 -7,4.5"
+         id="low_4"
+         class="line" />
+      <path
+         d="m 1,17.5 0,4.5"
+         id="low_5"
+         class="line" />
+      <path
+         d="m 8,17.5 v9"
+         id="low_6"
+         sodipodi:nodetypes="cc"
+         class="line" />
+      <path
+         d="m 15,17.5 0,4.5"
+         id="low_7"
+         class="line" />
+      <circle
+         id="low_8"
+         cx="8"
+         cy="28"
+         r="1.5"
+         class="line" />
+    </g>
+  </g>
+</svg>
