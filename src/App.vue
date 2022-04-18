@@ -10,6 +10,7 @@ import { onMounted, onUnmounted, reactive, ref, watch, type Ref } from "vue";
 import { Glyph, Paragraph, Word } from "./glyphs";
 
 type SavedState = {
+    spoilerMode?: boolean;
     words: { glyphs: string; text?: string }[];
     texts: { glyphs: string[]; description?: string }[];
 };
@@ -29,7 +30,7 @@ const state = reactive({
     glyphOnly: false,
     showPhonetic: false,
     toastText: undefined as string | undefined,
-    showSecrets: true,
+    spoilerMode: false,
 });
 
 async function onWordUpdate(value: Word) {
@@ -50,7 +51,7 @@ async function onWordUpdate(value: Word) {
         return;
     }
     state.word = new Word();
-    await value.toBlob(canvas.value, undefined, state.showSecrets);
+    await value.toBlob(canvas.value, undefined, state.spoilerMode);
     state.words.push(value);
     saveData();
 }
@@ -97,7 +98,7 @@ watch(
 );
 
 watch(
-    () => state.showSecrets,
+    () => state.spoilerMode,
     (val) => refreshWords(val)
 );
 
@@ -182,6 +183,7 @@ async function loadData() {
     if (!json) return;
     const data = JSON.parse(json) as SavedState;
 
+    state.spoilerMode = data.spoilerMode ?? false;
     console.log("Loading all words");
     state.words.push(
         ...(await Promise.all(
@@ -208,6 +210,7 @@ async function loadData() {
 
 function saveData() {
     let data: SavedState = {
+        spoilerMode: state.spoilerMode,
         words: state.words.map((w) => ({
             glyphs: w.toGlyphString(),
             text: w.plaintext,
@@ -277,7 +280,7 @@ html {
                     :editing="!!state.selectedWord"
                     :keyevents="keyevents"
                     @update:word="onWordUpdate"
-                    :show-secrets="state.showSecrets"
+                    :show-secrets="state.spoilerMode"
                 />
             </div>
             <div class="col-4">
@@ -294,7 +297,7 @@ html {
                     <div class="card-header">
                         <h2 class="card-title d-flex justify-content-end align-items-end">
                             <span class="flex-fill">Texts</span>
-                            <div v-if="state.showSecrets" class="form-check font-size-1">
+                            <div v-if="state.spoilerMode" class="form-check font-size-1">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
@@ -307,7 +310,7 @@ html {
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
-                                    v-model="state.showSecrets"
+                                    v-model="state.spoilerMode"
                                     id="flexCheckDefault"
                                 />
                                 <label class="form-check-label" for="flexCheckDefault"> Spoil! </label>
