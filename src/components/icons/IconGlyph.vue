@@ -89,6 +89,7 @@ import { onMounted, ref, watch } from "vue";
 const props = defineProps({
     modelValue: { type: Number, required: true },
     height: { type: Number },
+    row: { type: Number }
 });
 const emit = defineEmits<{
     (e: "update:modelValue", value: number): void;
@@ -99,10 +100,10 @@ function updateState(state: number, skip: number | null = null) {
     for (let i = 0; i < 16; i++) {
         if (i == skip) continue;
         const lineId = `#${i < 8 ? "high" : "low"}_${(i % 8) + 1}`;
-        const classList = (state & (2 ** i)) == 0 ? "line hide" : "line";
         const lineElem = root.value?.querySelector(lineId);
         if (!lineElem) throw "Element not found: " + lineId;
-        (lineElem.className as any).baseVal = classList;
+        lineElem.classList.toggle("hide", (state & (2 ** i)) == 0)
+        lineElem.classList.toggle("highlight", props.row != undefined && Math.floor(i / 4) == props.row);
     }
 }
 
@@ -110,6 +111,13 @@ watch(
     () => props.modelValue,
     (newValue) => {
         updateState(newValue);
+    }
+);
+
+watch(
+    () => props.row,
+    (newValue) => {
+        updateState(props.modelValue);
     }
 );
 
@@ -139,9 +147,20 @@ function line(n: number) {}
     stroke-linejoin: round;
     stroke-width: 1px;
     transition: stroke 200ms ease;
+    cursor: pointer;
 }
 .line.hide {
     stroke: #00000000;
+}
+
+.glyph-input:hover .line.highlight,
+.focused .line.highlight {
+    stroke: #222288;
+}
+
+.glyph-input:hover .line.hide.highlight,
+.focused .line.hide.highlight {
+    stroke: #d0d0ff;
 }
 
 .glyph:hover .line.hide {
