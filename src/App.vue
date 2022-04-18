@@ -277,7 +277,7 @@ html {
                     :editing="!!state.selectedWord"
                     :keyevents="keyevents"
                     @update:word="onWordUpdate"
-                    :split-components="state.showSecrets"
+                    :show-secrets="state.showSecrets"
                 />
             </div>
             <div class="col-4">
@@ -324,6 +324,9 @@ html {
                         </h2>
                     </div>
                     <ul class="list-group list-group-flush">
+                        <div class="list-group-item text-center text-muted" v-if="state.texts.length == 0">
+                            Press "New text" to add a text
+                        </div>
                         <template v-for="text in state.texts">
                             <li
                                 v-if="filterCheckText(text)"
@@ -353,6 +356,9 @@ html {
                                     {{ text.description }}
                                 </div>
                                 <div>
+                                    <div class="text-center text-muted" v-if="text.words.length == 0">
+                                        Empty text
+                                    </div>
                                     <template v-for="word in text.words">
                                         <img
                                             v-if="
@@ -415,6 +421,10 @@ html {
                         <button @click="popTextWord" class="btn btn-outline-danger mx-1">Pop word</button>
                         <button
                             @click="addNewText"
+                            :disabled="
+                                state.texts.length > 0 &&
+                                state.texts[state.texts.length - 1].words.length == 0
+                            "
                             class="btn btn-outline-success mx-1"
                         >
                             New text

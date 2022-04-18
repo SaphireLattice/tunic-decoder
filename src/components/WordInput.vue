@@ -21,7 +21,7 @@
                 }}</span>
                 {{ props.glyph.encoded.toString(16).padStart(4, "0") }}
             </div>
-            <div>
+            <div v-if="showSecrets">
                 <span class="text-muted" v-if="props.word.glyphs.length > 0">{{
                     props.word.toPhonetic()
                 }}</span>
@@ -30,16 +30,8 @@
         </div>
         <div class="card-footer bg-body d-flex justify-content-center">
             <button @click="pushGlyph(false)" class="btn btn-success mx-1">Add</button>
-            <button
-                @click="popGlyph()"
-                class="btn btn-outline-danger mx-1"
-            >
-                Del
-            </button>
-            <button
-                @click="setState(~props.glyph.encoded & (2 ** 16 - 1))"
-                class="btn btn-secondary mx-1"
-            >
+            <button @click="popGlyph()" class="btn btn-outline-danger mx-1">Del</button>
+            <button @click="setState(~props.glyph.encoded & (2 ** 16 - 1))" class="btn btn-secondary mx-1">
                 Flip
             </button>
             <button @click="setState(0)" class="btn btn-secondary mx-1">Clear</button>
@@ -85,7 +77,6 @@ const props = defineProps({
     glyph: { type: Glyph, required: true },
     editing: { type: Boolean },
     keyevents: { type: Array as PropType<Array<(event: KeyboardEvent) => any>> },
-    splitComponents: { type: Boolean },
     showSecrets: { type: Boolean },
 });
 const emit = defineEmits<{
@@ -117,17 +108,37 @@ function renderCanvas() {
     const context = canvas.value.getContext("2d");
     if (!context) return;
 
-    console.log(props.splitComponents);
+    console.log(props.showSecrets);
 
     const s = glyphScale.value;
     context.clearRect(0, 0, canvasWidth, 18 * s);
-    props.word.render(context, 1 * s, 1 * s, s, "#6c757d", undefined, props.splitComponents, "#5ca1ab", "#a6615b");
+    props.word.render(
+        context,
+        1 * s,
+        1 * s,
+        s,
+        "#6c757d",
+        undefined,
+        props.showSecrets,
+        "#5ca1ab",
+        "#a6615b"
+    );
     let offset = 1 + props.word.glyphs.length * 8;
     props.glyph.render(context, offset * s, 1 * s, false, s);
 
     for (const stashed of state.stashedGlyphs) {
         offset += 8;
-        new Glyph(stashed).render(context, offset * s, 1 * s, false, s, "#a6615b", props.splitComponents, "#5ca1ab", "#a6615b");
+        new Glyph(stashed).render(
+            context,
+            offset * s,
+            1 * s,
+            false,
+            s,
+            "#a6615b",
+            props.showSecrets,
+            "#5ca1ab",
+            "#a6615b"
+        );
     }
 }
 
@@ -210,8 +221,7 @@ function popGlyph() {
     setState(props.word.glyphs.pop()?.encoded ?? 0);
 
     if (old == 0) {
-        if (wordLength == 0)
-            setState(state.stashedGlyphs.shift() ?? 0);
+        if (wordLength == 0) setState(state.stashedGlyphs.shift() ?? 0);
         return;
     }
     state.stashedGlyphs.unshift(old);
