@@ -147,6 +147,12 @@ async function popTextWord() {
     saveData();
 }
 
+async function addNewText() {
+    if (state.texts[state.texts.length - 1].words.length == 0) return;
+    const newPara = new Paragraph();
+    state.texts.push(newPara);
+}
+
 onMounted(() => {
     if (!canvas.value) return;
     const context = canvas.value.getContext("2d");
@@ -408,7 +414,7 @@ html {
                     <div class="card-footer">
                         <button @click="popTextWord" class="btn btn-outline-danger mx-1">Pop word</button>
                         <button
-                            @click="() => state.texts.push(new Paragraph())"
+                            @click="addNewText"
                             class="btn btn-outline-success mx-1"
                         >
                             New text
