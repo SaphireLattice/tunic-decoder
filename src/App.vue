@@ -31,6 +31,7 @@ const state = reactive({
     showPhonetic: false,
     toastText: undefined as string | undefined,
     spoilerMode: false,
+    page: "input",
 });
 
 async function onWordUpdate(value: Word) {
@@ -271,8 +272,20 @@ html {
 
 <template>
     <main class="container my-4">
+        <ul class="nav nav-tabs d-flex d-lg-none">
+            <li class="nav-item" v-for="page in ['input', 'words', 'texts']">
+                <a
+                    class="nav-link"
+                    :class="{ active: state.page == page }"
+                    :aria-current="state.page == page ? 'page' : undefined"
+                    href="#"
+                    @click="state.page = page"
+                    >{{ page }}</a
+                >
+            </li>
+        </ul>
         <div class="row">
-            <div class="col-4">
+            <div class="col-12 col-lg-4 d-lg-block" :class="{ 'd-none': state.page != 'input', 'd-block': state.page == 'input' }">
                 <WordInput
                     ref="wordinput"
                     :glyph="state.glyph"
@@ -283,7 +296,7 @@ html {
                     :show-secrets="state.spoilerMode"
                 />
             </div>
-            <div class="col-4">
+            <div class="col-12 col-lg-4 d-lg-block" :class="{ 'd-none': state.page != 'words', 'd-block': state.page == 'words' }">
                 <WordList
                     :glyph="state.glyph"
                     :words="state.words"
@@ -292,7 +305,7 @@ html {
                     @add-word="addTextWord"
                 />
             </div>
-            <div class="col-4">
+            <div class="col-12 col-lg-4 d-lg-block" :class="{ 'd-none': state.page != 'texts', 'd-block': state.page == 'texts' }">
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title d-flex justify-content-end align-items-end">
