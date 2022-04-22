@@ -1,0 +1,28 @@
+name: build-web-app
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-web-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '17'
+      - name: ⛓ Install dependencies from package-lock.json
+        run: npm ci
+      - name: 🛠 Build the Vue app
+        run: npm build
+      - name: 📬 Upload the output artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - run: echo "✔ Done building"
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "🧱 Nothing here yet! 🧱"
