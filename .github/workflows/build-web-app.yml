@@ -15,7 +15,7 @@ jobs:
       - name: ⛓ Install dependencies from package-lock.json
         run: npm ci
       - name: 🛠 Build the Vue app
-        run: npm build
+        run: npm run build
       - name: 📬 Upload the output artifact
         uses: actions/upload-artifact@v3
         with:
@@ -24,5 +24,6 @@ jobs:
       - run: echo "✔ Done building"
   deploy:
     runs-on: ubuntu-latest
+    needs: build-web-app
     steps:
       - run: echo "🧱 Nothing here yet! 🧱"
