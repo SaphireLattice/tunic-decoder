@@ -21,9 +21,11 @@ jobs:
         with:
           name: dist
           path: dist
-      - run: echo "✔ Done building"
   deploy:
     runs-on: ubuntu-latest
     needs: build-web-app
+    environment:
+      name: production
+      url: https://lunar.exchange/tunic-decoder
     steps:
       - run: echo "🧱 Nothing here yet! 🧱"
