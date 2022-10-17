@@ -38,7 +38,7 @@ async function onWordUpdate(value: Word) {
     const found = state.words.find((w) => w.toGlyphString() == value.toGlyphString());
     if (state.selectedWord) {
         if (found && found != state.selectedWord) {
-            alert("Word already exists");
+            state.toastText = "Word already exists";
             return;
         }
         restoreEditing(state.selectedWord, true);
@@ -100,7 +100,11 @@ watch(
 
 watch(
     () => state.spoilerMode,
-    (val) => refreshWords(val)
+    (val) => {
+        if (!val && state.showPhonetic)
+            state.showPhonetic = false;
+        refreshWords(val)
+    }
 );
 
 async function restoreEditing(target?: Word, alreadySaved: boolean = false) {
@@ -449,7 +453,7 @@ html {
                 </div>
             </div>
         </div>
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast-container position-fixed bottom-0 start-0 end-0 mx-auto p-3">
             <Toast :text="state.toastText" @done="state.toastText = undefined"></Toast>
         </div>
     </main>

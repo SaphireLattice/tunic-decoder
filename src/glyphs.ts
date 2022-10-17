@@ -1,3 +1,6 @@
+// Warning: The spoiler zone! If you want to keep the surprise/puzzle unspoilt and solve it yourself, do not scroll through this file!
+// It straight up describes the writing system, sorry <3
+
 export class Paragraph {
     words: Word[] = [];
     description: string = "";

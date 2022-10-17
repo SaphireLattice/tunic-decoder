@@ -7,10 +7,19 @@ It also renders glyphs fancily!
 Keyboard input supported:
 - `QWER` to toggle lines 1-2-3-4 out of the currently highlit with blue ones. There's no highlight until you first use the keyboard input!
 - `F` and `Shift + F` for choosing next and previous 4 lines to input
-- `A` and `Shift + A` to delete/pop, and to add a blank/push a glyph respectively. If the glyph is not empty, it will be saved into a temporary secondary buffer. This can be useful to copy a word! Note that the buffer is not saved between app reloads
+- `A` and `Shift + A` to delete/pop, and to add a blank/push a glyph respectively. If the glyph is not empty, it will be saved into a temporary secondary buffer (shown to the right of the fully black cursor). This can be useful to copy a word! Note that the buffer is not saved between app reloads
 - `C` to clear current glyph input
 - `Shift + D` to push the current word into the list of words, including the text/descriping in the field under the input panel. The secondary buffer is *not* cleared
 - `Esc` to hide the highlight and stop keyboard input session. The glyph, word and buffer are *not* cleared
+
+## TODO List
+
+- Keybinds help in the app itself
+- Punctuation input! And just plain text
+- In spoiler mode - better guide for how to speak it? A link to one?
+- Saving the currently edited word and glyph
+- Saving the buffer, too? Will need to make sure you can reset it though
+- Better text editing tools
 
 ## Development
 

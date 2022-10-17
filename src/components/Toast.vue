@@ -6,15 +6,18 @@
         aria-live="assertive"
         aria-atomic="true"
     >
-        <div class="d-flex">
-            <div class="toast-body">{{ text }}</div>
+        <div class="toast-header bg-warning">
+            <strong class="me-auto">Warning!</strong>
             <button
                 @click="forceClose"
                 type="button"
-                class="btn-close me-2 m-auto"
+                class="btn-close"
                 data-bs-dismiss="toast"
                 aria-label="Close"
             ></button>
+        </div>
+        <div class="d-flex">
+            <div class="toast-body">{{ text }}</div>
         </div>
     </div>
 </template>
@@ -35,7 +38,7 @@ watch(() => props.text, (val, old) => {
         clearTimeout(closeTimeout.value);
     closeTimeout.value = setTimeout(
         () => forceClose(),
-        2000
+        3000
     );
 });
 
