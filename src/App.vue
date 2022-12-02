@@ -319,27 +319,27 @@ html {
                                     class="form-check-input"
                                     type="checkbox"
                                     v-model="state.showPhonetic"
-                                    id="flexCheckDefault"
+                                    id="spoilerGatedFeatureCheckbox"
                                 />
-                                <label class="form-check-label" for="flexCheckDefault"> Phonetic </label>
+                                <label class="form-check-label" for="spoilerGatedFeatureCheckbox"> Phonetic </label>
                             </div>
                             <div class="form-check font-size-1 ms-2">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
                                     v-model="state.spoilerMode"
-                                    id="flexCheckDefault"
+                                    id="spoilerCheckbox"
                                 />
-                                <label class="form-check-label" for="flexCheckDefault"> Spoil! </label>
+                                <label class="form-check-label" for="spoilerCheckbox"> Spoil! </label>
                             </div>
                             <div class="form-check font-size-1 ms-2">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
                                     v-model="state.glyphOnly"
-                                    id="flexCheckDefault"
+                                    id="glyphCheckbox"
                                 />
-                                <label class="form-check-label" for="flexCheckDefault"> Glyph </label>
+                                <label class="form-check-label" for="glyphCheckbox"> Glyph </label>
                             </div>
                         </h2>
                     </div>
