@@ -26,6 +26,6 @@ jobs:
     needs: build-web-app
     environment:
       name: production
-      url: https://lunar.exchange/tunic-decoder
+      # url: https://lunar.exchange/tunic-decoder
     steps:
       - run: echo "🧱 Nothing here yet! 🧱"
