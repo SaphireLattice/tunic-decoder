@@ -407,7 +407,7 @@ html {
                                                         state.selectedWord == word ? undefined : word)
                                             "
                                             >{{
-                                                word.plaintext == "" ? "[" + word.toPhonetic() + "]" : word
+                                                word.plaintext == "" ? "/" + word.toPhonetic() + "/" : word
                                             }}</span
                                         >
                                         {{ " " }}
