@@ -108,8 +108,6 @@ function renderCanvas() {
     const context = canvas.value.getContext("2d");
     if (!context) return;
 
-    console.log(props.showSecrets);
-
     const s = glyphScale.value;
     context.clearRect(0, 0, canvasWidth, 18 * s);
     props.word.render(

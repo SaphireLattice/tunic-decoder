@@ -8,6 +8,7 @@
         <div class="card-header">
             <input
                 @keydown.stop
+                @input="spoilerModeHider"
                 v-model="searchQuery"
                 type="text"
                 class="form-control"
@@ -16,7 +17,7 @@
             />
         </div>
         <ul class="list-group list-group-flush">
-            <li v-if="words.length == 0" class="list-group-item d-flex justify-content-center text-muted">
+            <li v-if="words.length == 0" class="list-group-item d-flex justify-content-center text-muted my-3">
                 No words recorded...
             </li>
             <template v-for="word in words">
@@ -80,17 +81,31 @@ import { ref, type PropType } from "vue";
 import { Glyph, Masks, Word } from "@/glyphs";
 
 const searchQuery = ref("");
+const spoilerHidden = ref(false);
 
 const props = defineProps({
     words: { type: Array as PropType<Array<Word>>, required: true },
     selected: { type: Word },
     glyph: { type: Glyph },
+    spoilHidden: { type: Boolean, required: true }
 });
 const emit = defineEmits<{
     (e: "deleted", value: Word): void;
     (e: "update:selected", value: Word | undefined): void;
     (e: "addWord", value: Word): void;
+    (e: "update:spoilHidden", value: boolean): void;
 }>();
+
+function spoilerModeHider() {
+    if (!props.spoilHidden && searchQuery.value.toLowerCase().startsWith("@hide spoil")) {
+        emit("update:spoilHidden", true);
+        return;
+    }
+    if (props.spoilHidden && searchQuery.value.toLowerCase().startsWith("@show spoil")) {
+        emit("update:spoilHidden", false);
+        return;
+    }
+}
 
 function filterCheck(query: string, word: Word): boolean {
     const q = query.trim().toLowerCase();

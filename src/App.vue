@@ -2,6 +2,7 @@
 import WordInput from "./components/WordInput.vue";
 import WordList from "./components/WordList.vue";
 import Toast from "./components/Toast.vue";
+import Modal from "./components/Modal.vue";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -11,6 +12,8 @@ import { Glyph, Paragraph, Word } from "./glyphs";
 
 type SavedState = {
     spoilerMode?: boolean;
+    spoilHidden?: boolean;
+    spoilerSpecificFeature?: boolean;
     words: { glyphs: string; text?: string }[];
     texts: { glyphs: string[]; description?: string }[];
 };
@@ -30,7 +33,11 @@ const state = reactive({
     glyphOnly: false,
     showPhonetic: false,
     toastText: undefined as string | undefined,
+    modalHelp: false,
+
     spoilerMode: false,
+    spoilHidden: false,
+    spoilerConfirmShowModal: false,
     page: "input",
 });
 
@@ -62,6 +69,7 @@ async function onKeyInput(event: KeyboardEvent) {
     if (!notHandled) return;
 
     if (event.key == "Escape" && state.selectedWord) state.selectedWord = undefined;
+    if (event.key == "F1") state.modalHelp = !state.modalHelp;
 }
 
 watch(
@@ -104,6 +112,20 @@ watch(
         if (!val && state.showPhonetic)
             state.showPhonetic = false;
         refreshWords(val)
+    }
+);
+
+watch(
+    () => state.spoilHidden,
+    (val) => {
+        console.log("Hide?", val, state.spoilHidden);
+        let wasOn = state.spoilerMode;
+        if (state.spoilHidden) {
+            state.showPhonetic = false;
+            state.spoilerMode = false;
+        }
+        if (wasOn)
+            refreshWords(val)
     }
 );
 
@@ -166,6 +188,13 @@ onMounted(() => {
 
     loadData();
     document.addEventListener("keydown", onKeyInput);
+
+    const keybindsButton = document.getElementById("keybinds-button") as HTMLAnchorElement;
+    keybindsButton.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        state.modalHelp = true;
+    })
 });
 
 onUnmounted(() => {
@@ -188,7 +217,12 @@ async function loadData() {
     if (!json) return;
     const data = JSON.parse(json) as SavedState;
 
-    state.spoilerMode = data.spoilerMode ?? false;
+    state.spoilHidden = data.spoilHidden ?? false;
+    if (!state.spoilHidden) {
+        state.spoilerMode = data.spoilerMode ?? false;
+        state.showPhonetic = data.spoilerSpecificFeature ?? false;
+    }
+
     console.log("Loading all words");
     state.words.push(
         ...(await Promise.all(
@@ -205,7 +239,9 @@ async function loadData() {
             data.texts.map(
                 (t) =>
                     new Paragraph(
-                        t.glyphs.map((g) => state.words.find((w) => w.toGlyphString() == g)!),
+                        t.glyphs
+                            .map((g) => state.words.find((w) => w.toGlyphString() == g)!)
+                            .filter((w) => w != null),
                         t.description
                     )
             )
@@ -213,9 +249,18 @@ async function loadData() {
     );
 }
 
+function spoilerConfirm(event: MouseEvent) {
+    if (state.spoilerMode) return;
+
+    event.preventDefault();
+    state.spoilerConfirmShowModal = true;
+}
+
 function saveData() {
     let data: SavedState = {
         spoilerMode: state.spoilerMode,
+        spoilerSpecificFeature: state.showPhonetic,
+        spoilHidden: state.spoilHidden,
         words: state.words.map((w) => ({
             glyphs: w.toGlyphString(),
             text: w.plaintext,
@@ -275,7 +320,7 @@ html {
 </style>
 
 <template>
-    <main class="container my-4">
+    <main class="container my-4" @keydown.question="console.log('hi')">
         <ul class="nav nav-tabs d-flex d-lg-none">
             <li class="nav-item" v-for="page in ['input', 'words', 'texts']">
                 <a
@@ -305,6 +350,7 @@ html {
                     :glyph="state.glyph"
                     :words="state.words"
                     v-model:selected="state.selectedWord"
+                    v-model:spoilHidden="state.spoilHidden"
                     @deleted="saveData()"
                     @add-word="addTextWord"
                 />
@@ -314,7 +360,7 @@ html {
                     <div class="card-header">
                         <h2 class="card-title d-flex justify-content-end align-items-end">
                             <span class="flex-fill">Texts</span>
-                            <div v-if="state.spoilerMode" class="form-check font-size-1">
+                            <div v-if="state.spoilerMode && !state.spoilHidden" class="form-check font-size-1">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
@@ -323,16 +369,17 @@ html {
                                 />
                                 <label class="form-check-label" for="spoilerGatedFeatureCheckbox"> Phonetic </label>
                             </div>
-                            <div class="form-check font-size-1 ms-2">
+                            <div v-if="!state.spoilHidden" class="form-check font-size-1 ms-2" title="Away with the theatre, show me everything!">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
                                     v-model="state.spoilerMode"
+                                    @click="spoilerConfirm"
                                     id="spoilerCheckbox"
                                 />
                                 <label class="form-check-label" for="spoilerCheckbox"> Spoil! </label>
                             </div>
-                            <div class="form-check font-size-1 ms-2">
+                            <div class="form-check font-size-1 ms-2" title="Show only glyphs, no translations!">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
@@ -344,8 +391,11 @@ html {
                         </h2>
                     </div>
                     <ul class="list-group list-group-flush">
-                        <div class="list-group-item text-center text-muted" v-if="state.texts.length == 0">
+                        <div class="list-group-item text-center text-muted my-2" v-if="state.texts.length == 0">
                             Press "New text" to add a text
+                        </div>
+                        <div class="list-group-item text-center text-muted my-2" v-if="state.texts.length != 0 && !state.texts.some((t) => filterCheckText(t))">
+                            No texts with selected word found. <a href="#" @click="state.selectedWord = undefined">Reset selected word?</a>
                         </div>
                         <template v-for="text in state.texts">
                             <li
@@ -457,4 +507,60 @@ html {
             <Toast :text="state.toastText" @done="state.toastText = undefined"></Toast>
         </div>
     </main>
+    <div id="modals">
+    </div>
+
+    <Modal modal-id="spoiler-confirm"  title="The last line between"  v-model="state.spoilerConfirmShowModal">
+        <p>Are you sure you want to enable the spoiler mode? If you've not finished the game yet, there will be hints that show up later!</p>
+        <p>You can disable this checkbox by typing <code>@hide spoiler</code> into the search box, and reveal it again with <code>@show spoiler</code>!</p>
+        <template v-slot:footer="footerSlot">
+            <button class="btn btn-outline-primary" @click="footerSlot.close">Go back</button>
+            <button class="btn btn-danger"  @click="() => { state.spoilerMode = true; footerSlot.close(); }">Spoil!</button>
+        </template>
+    </Modal>
+    <Modal modal-id="help" title="Help and Keybinds" v-model="state.modalHelp">
+        <p>
+            Hi! Thanks for taking a look at this web app. This is made for figuring out TUNIC's writing <em>on your own</em>.
+            No this does <em>not</em> translate things automatically for you! I wrote this while playing the game and figuring things out myself, and realized that using just paper will be rather difficult if I want to search through things and cross-reference them.
+            As such, there's a lot of little things to help you figure out the writing yourself, though potentially biased by my own attempts at figuring it out in some places, whether they were right or wrong.
+        </p>
+        <hr>
+        <p>
+            This application was made with extensive keyboard input support, to make typing in patterns quick and easy. It's oriented towards input with the left half of a QWERTY keyboard, and sadly there's no right handed mode.
+            Feel free to poke me on <a href="https://github.com/SaphireLattice/tunic-decoder/issues">GitHub issues</a> or via email if you want more extensive keybinds support!
+        </p>
+        <p class="mb-0"><strong>Keybinds:</strong></p>
+        <ul>
+            <li><code>QWER</code> to toggle lines 1-2-3-4 out of the currently highlit with blue ones. There's no highlight until you first use the keyboard input!</li>
+            <li><code>F</code> and <code>Shift + F</code> for choosing next and previous 4 lines to input</li>
+            <li><code>A</code> and <code>Shift + A</code> to delete/pop, and to add a blank/push a glyph respectively. If the glyph is not empty, it will be saved into a temporary secondary buffer (shown to the right of the fully black cursor). This can be useful to copy a word! Note that the buffer is not saved between app reloads</li>
+            <li><code>C</code> to clear current glyph input</li>
+            <li><code>Shift + D</code> to push the current word into the list of words, including the text/descriping in the field under the input panel. The secondary buffer is not cleared</li>
+            <li><code>Esc</code> to hide the highlight and stop keyboard input session. The glyph, word and buffer are not cleared</li>
+            <li><code>F1</code> to show this dialog</li>
+        </ul>
+        <hr>
+        <p><strong>Search box:</strong></p>
+        <p>You can search for any text that you've put into the word's assigned note, or for hex code of a glyph within a word.</p>
+        <p>The search box also supports a weird way of searching for patterns!</p>
+        <p class="mb-0">
+            Type <code>\</code> and then...
+        </p>
+        <ul>
+            <li>one or a few of <code>v^|o</code> to search for glyphs that have as many similar line patterns to the searched thing as you put in. Play around with it!</li>
+            <li><code>lr</code> searches for lines on the "left" and "right" half of it respectively.</li>
+            <li>Replace <code>\</code> with one <code>=</code> to require exact count of patterns you've entered, not counting the ones you didn't search for. Two <code>==</code> to search for EXACT match in count, and assume 0 for anything not entered.</li>
+        </ul>
+        <p class="mb-0">
+            Search patterns that depend on current Glyph Input state:
+        </p>
+        <ul>
+            <li><code>@</code> - glyphs that have at least the same lines active as current Glyph Input state</li>
+            <li><code>@@</code> - glyphs that are identical to the Glyph Input </li>
+            <li v-if="state.spoilerMode"><code>@i [optional hex]</code> - glyphs that match the Glyph Input on the "inside", or match the hex input in same way</li>
+            <li v-if="state.spoilerMode"><code>@o [hex?]</code> - same as above, but "outside"</li>
+        </ul>
+        <hr>
+        <p>To hide the <strong>Spoil!</strong> checkbox (don't worry, it now has a modal confirmation!), type <code>@hide spoilers</code> into search box, and it'll disappear. If you do want it back, just type <code>@show spoilers</code> - this only shows the checkbox, it doesn't activate it!</p>
+    </Modal>
 </template>
